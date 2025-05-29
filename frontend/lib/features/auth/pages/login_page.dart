@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/features/auth/pages/login_page.dart';
+import 'package:frontend/features/auth/pages/signup_page.dart';
 import 'package:frontend/widget/reusable_button.dart';
 import 'package:frontend/widget/reusable_textform.dart';
 
-class SignupPage extends StatefulWidget {
-  static route() => MaterialPageRoute(builder: (context) => const SignupPage());
-  const SignupPage({super.key});
+class LoginPage extends StatefulWidget {
+  static route() => MaterialPageRoute(builder: (context) => const LoginPage());
+  const LoginPage({super.key});
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  final nameController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
-  void _signupValidate() {
+  void _loginValidate() {
     if (_formKey.currentState!.validate()) {
       //
     }
@@ -29,7 +28,6 @@ class _SignupPageState extends State<SignupPage> {
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
-    nameController.dispose();
     super.dispose();
   }
 
@@ -45,24 +43,10 @@ class _SignupPageState extends State<SignupPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  'Sign Up.',
+                  'Login.',
                   style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 32),
-
-                // Name field
-                ReusableTextForm(
-                  hintText: 'Full Name',
-                  controller: nameController,
-                  prefixIcon: Icons.person,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Full name is required';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
 
                 // Email field
                 ReusableTextForm(
@@ -96,32 +80,13 @@ class _SignupPageState extends State<SignupPage> {
                       return 'Password is required';
                     }
 
-                    if (value.length < 8) {
-                      return 'Password must be at least 8 characters long';
-                    }
-
-                    if (value.length > 32) {
-                      return 'Password must be less than 32 characters';
-                    }
-
-                    // Check for at least one uppercase letter
-                    if (!RegExp(r'[A-Z]').hasMatch(value)) {
-                      return 'Password must contain at least one uppercase letter';
-                    }
-
-                    // Check for at least one lowercase letter
-                    if (!RegExp(r'[a-z]').hasMatch(value)) {
-                      return 'Password must contain at least one lowercase letter';
-                    }
-
-                    // Check for at least one digit
-                    if (!RegExp(r'[0-9]').hasMatch(value)) {
-                      return 'Password must contain at least one number';
-                    }
-
-                    // Check for at least one special character
-                    if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
-                      return 'Password must contain at least one special character';
+                    if (value.length < 8 ||
+                        value.length > 32 ||
+                        !RegExp(r'[A-Z]').hasMatch(value) ||
+                        !RegExp(r'[a-z]').hasMatch(value) ||
+                        !RegExp(r'[0-9]').hasMatch(value) ||
+                        !RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
+                      return 'Password incorrect';
                     }
 
                     return null;
@@ -130,22 +95,22 @@ class _SignupPageState extends State<SignupPage> {
 
                 const SizedBox(height: 16),
                 ReusableButton(
-                  text: 'Sign Up',
+                  text: 'Login',
                   backgroundColor: Colors.black,
-                  onPressed: _signupValidate,
+                  onPressed: _loginValidate,
                 ),
                 const SizedBox(height: 16),
                 InkWell(
                   onTap: () {
-                    Navigator.of(context).push(LoginPage.route());
+                    Navigator.of(context).push(SignupPage.route());
                   },
                   child: RichText(
                     text: TextSpan(
                       style: Theme.of(context).textTheme.titleMedium,
-                      text: 'Already have an account? ',
+                      text: 'Don\'t have an account? ',
                       children: [
                         const TextSpan(
-                          text: 'Login',
+                          text: 'Sign Up',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ],
