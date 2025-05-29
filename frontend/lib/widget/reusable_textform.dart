@@ -55,6 +55,15 @@ class _ReusableTextFormState extends State<ReusableTextForm> {
                   setState(() {
                     _obscureText = !_obscureText;
                   });
+
+                  // Reset to hidden after 1 second
+                  if (!_obscureText) {
+                    Future.delayed(const Duration(seconds: 1), () {
+                      setState(() {
+                        _obscureText = true;
+                      });
+                    });
+                  }
                 },
               )
             : null,
