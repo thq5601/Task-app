@@ -2,7 +2,8 @@ import { Request, Response, Router } from "express";
 import { db } from "../db";
 import { NewUser, users } from "../db/schema";
 import { eq } from "drizzle-orm";
-import bcryptjs from "bcryptjs"
+import bcryptjs from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 
 const authRouter = Router()
@@ -13,7 +14,15 @@ interface SignUpBody {
     password: string
 }
 
-authRouter.post("/signup", async (req: Request<{}, {}, SignUpBody>, res: Response) => {
+interface LoginBody {
+    email: string
+    password: string
+}
+
+// sign up section
+authRouter.post(
+    "/signup", 
+    async (req: Request<{}, {}, SignUpBody>, res: Response) => {
     try {
         // get req body
         const { name, email, password } = req.body
@@ -33,7 +42,10 @@ authRouter.post("/signup", async (req: Request<{}, {}, SignUpBody>, res: Respons
         }
 
         // hashed password
-        const hashedPassword = await bcryptjs.hash(password, 8)
+        const hashedPassword = await bcryptjs.hash(
+            password, 
+            8
+        )
 
         // create a new user and store it in DB
         const newUser: NewUser = {
@@ -43,15 +55,101 @@ authRouter.post("/signup", async (req: Request<{}, {}, SignUpBody>, res: Respons
         }
 
         const [user] = await db.insert(users).values(newUser).returning()
-        res.status(201).json(user)  // return status 201 if user created
+        res.json(user)  // return if user created
     }
     catch (e) {
         res.status(500).json({ error: e })
     }
 })
 
-authRouter.get('/', (req, res) => {
-    res.send('Auth page')
+// login section
+authRouter.post(
+    "/login", 
+    async (req: Request<{}, {}, LoginBody>, res: Response) => {
+    try {
+        // get req body
+        const { email, password } = req.body
+        // check if the user doesn't exist
+        const [existingUser] = await db
+            .select()
+            .from(users)
+            .where(eq(users.email, email))  // select all from users where users.email equal to email
+
+        if(!existingUser){
+            // check if the user doesn't exist
+            res
+                .status(400)
+                .json({msg: "User with this email does not exist!"})
+            return
+        }
+
+        // compare the password to check if it true or false
+        const isMatch = await bcryptjs.compare(
+            password, 
+            existingUser.password
+        )
+
+        if (!isMatch){
+            res.status(400).json({msg: "Incorrect password!"})
+            return
+        }
+
+        const token = jwt.sign({id: existingUser.id}, "passwordKey")
+
+        res.json({token, ...existingUser})  // return if login succesful
+    }
+    catch (e) {
+        res.status(500).json({ error: e })
+    }
+})
+
+// 
+authRouter.post(
+    "/tokenIsValid",
+    async(req, res)=>{
+        try{
+            // get the header
+            const token = req.header("x-auth-token")
+
+            if(!token){
+                res.json(false)
+                return 
+            }
+
+            // verify if the token is valid
+            const isVerified = jwt.verify(token, "passwordKey")
+
+            if(!isVerified){
+                res.json(false)
+                return 
+            }
+
+            // get the user data if the token is valid
+            const verifiedToken = isVerified as {id: string}
+
+            const user = await db
+                .select()
+                .from(users)
+                .where(eq(users.id, verifiedToken.id))
+            
+            // if no user, return false
+            if (!user){
+                res.json(false)
+                return
+            }
+
+            res.json(true)
+        }
+        catch(e){
+            res.status(500).json(false)
+        }
+    }
+)
+
+authRouter.get(
+    "/", 
+    (req, res) => {
+        res.send('Auth page')
 })
 
 export default authRouter
