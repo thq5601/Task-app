@@ -4,6 +4,7 @@ import { NewUser, users } from "../db/schema";
 import { eq } from "drizzle-orm";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { auth, AuthRequest } from "../middleware/auth";
 
 
 const authRouter = Router()
@@ -148,8 +149,9 @@ authRouter.post(
 
 authRouter.get(
     "/", 
-    (req, res) => {
-        res.send('Auth page')
+    auth, 
+    (req: AuthRequest, res) => {
+        res.send(req.token)
 })
 
 export default authRouter
