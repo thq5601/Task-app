@@ -150,8 +150,23 @@ authRouter.post(
 authRouter.get(
     "/", 
     auth, 
-    (req: AuthRequest, res) => {
-        res.send(req.token)
+    async (req: AuthRequest, res) => {
+        try{
+            if(!req.user){
+                res.status(401).json({msg: "User not found!"})
+                return
+            }
+
+            const [user] = await db.select().from(users).where(eq(users.id, req.user))
+
+            res.json({
+                ...user,
+                token: req.token
+            })
+        }
+        catch(e){
+            res.status(500).json(false)
+        }
 })
 
 export default authRouter
