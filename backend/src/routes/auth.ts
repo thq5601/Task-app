@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { auth, AuthRequest } from "../middleware/auth";
+import { error } from "console";
 
 
 const authRouter = Router()
@@ -38,7 +39,7 @@ authRouter.post(
             // if(0) as same as if(false) so the if condition will never run
             res
                 .status(400)
-                .json({msg: "Same email already exist!"})
+                .json({error: "Same email already exist!"})
             return
         }
 
