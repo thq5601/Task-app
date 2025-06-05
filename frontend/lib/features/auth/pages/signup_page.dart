@@ -49,7 +49,7 @@ class _SignupPageState extends State<SignupPage> {
             ).showSnackBar(SnackBar(content: Text(state.error)));
           } else if (state is AuthSignUp) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Account created! Login NOW!")),
+              const SnackBar(content: Text("Account created successfully.")),
             );
           }
         },
