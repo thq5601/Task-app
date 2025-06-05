@@ -4,7 +4,7 @@ import 'package:frontend/core/constants/constants.dart';
 import 'package:frontend/models/user_model.dart';
 import 'package:http/http.dart' as http;
 
-class AuthRemoteRepo {
+class AuthRemoteRepository {
   Future<UserModel> signUp({
     required String name,
     required String email,
