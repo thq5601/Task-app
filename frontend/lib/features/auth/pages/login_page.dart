@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/features/auth/cubit/auth_cubit.dart';
 import 'package:frontend/features/auth/pages/signup_page.dart';
+import 'package:frontend/features/home/page/home_page.dart';
 import 'package:frontend/widget/reusable_button.dart';
 import 'package:frontend/widget/reusable_textform.dart';
 
@@ -45,9 +46,11 @@ class _LoginPageState extends State<LoginPage> {
               context,
             ).showSnackBar(SnackBar(content: Text(state.error)));
           } else if (state is AuthLoggedIn) {
-            ScaffoldMessenger.of(
+            Navigator.pushAndRemoveUntil(
               context,
-            ).showSnackBar(const SnackBar(content: Text("You're logged in.")));
+              HomePage.route(),
+              (_) => false,
+            );
           }
         },
         builder: (context, state) {
