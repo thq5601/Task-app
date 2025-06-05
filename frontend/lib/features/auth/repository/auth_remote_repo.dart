@@ -27,5 +27,24 @@ class AuthRemoteRepo {
     }
   }
 
-  // Future<void> login() {}
+  Future<UserModel> login({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final res = await http.post(
+        Uri.parse('${Constants.backendUri}/auth/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email, 'password': password}),
+      );
+
+      if (res.statusCode != 200) {
+        throw jsonDecode(res.body)['error'];
+      }
+
+      return UserModel.fromJson(res.body);
+    } catch (e) {
+      throw e.toString();
+    }
+  }
 }
