@@ -81,7 +81,7 @@ authRouter.post(
             // check if the user doesn't exist
             res
                 .status(400)
-                .json({msg: "User with this email does not exist!"})
+                .json({error: "User with this email does not exist!"})
             return
         }
 
@@ -92,7 +92,7 @@ authRouter.post(
         )
 
         if (!isMatch){
-            res.status(400).json({msg: "Incorrect password!"})
+            res.status(400).json({error: "Incorrect password!"})
             return
         }
 
@@ -154,7 +154,7 @@ authRouter.get(
     async (req: AuthRequest, res) => {
         try{
             if(!req.user){
-                res.status(401).json({msg: "User not found!"})
+                res.status(401).json({error: "User not found!"})
                 return
             }
 
