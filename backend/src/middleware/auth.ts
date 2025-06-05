@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken"
 import { db } from "../db";
 import { users } from "../db/schema";
 import { eq } from "drizzle-orm";
+import { error } from "console";
 
 export interface AuthRequest extends Request{
     user?: UUID
@@ -19,7 +20,7 @@ export const auth = async (
             const token = req.header("x-auth-token")
 
             if(!token){
-                res.status(401).json({msg: "No auth token, access denied!"})
+                res.status(401).json({error: "No auth token, access denied!"})
                 return 
             }
 
@@ -27,7 +28,7 @@ export const auth = async (
             const isVerified = jwt.verify(token, "passwordKey")
 
             if(!isVerified){
-                res.status(401).json({msg: "Token verification failed!"})
+                res.status(401).json({error: "Token verification failed!"})
                 return 
             }
 
@@ -41,7 +42,7 @@ export const auth = async (
             
             // if no user, return false
             if (!user){
-                res.status(401).json({msg: "User not found!"})
+                res.status(401).json({error: "User not found!"})
                 return
             }
 
@@ -51,6 +52,6 @@ export const auth = async (
             next() 
             }
         catch(e){
-            res.status(500).json(false)
+            res.status(500).json({error: e})
         }
     }
